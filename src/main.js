@@ -23,12 +23,39 @@ k.scene("main", async () => {
 k.loadSprite("map", "./office.png");
 
 k.scene("main", async () => {
-  //const mapData = await (await fetch("./office.json")).json();
-  //const layers = mapData.layers;
-
   const map = k.add([k.sprite("map"), k.pos(0), k.scale(scaleFactor)]);
 
   console.log("Map loaded:", map);
+
+  //const mapData = await (await fetch("./office.json")).json();
+  //const layers = mapData.layers;
+
+  try {
+    const response = await fetch("./office.json");
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    const mapData = await response.json();
+
+    const layers = mapData.layers;
+    //console.log("Layers loaded:", layers);
+    //console.log(mapData);
+
+    for (const layer of layers) {
+      if (layer.name === "walls") {
+        for (const wall of layer.objects) {
+          map.add([
+            k.area({
+              shape: new k.Rect(k.vec2(0), wall.width, wall.height),
+            }),
+            k.body({ isStatic: true }),
+            k.pos(wall.x, wall.y),
+            wall.name,
+          ]);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("error loading JSON:", error);
+  }
 
   const player = k.add([
     k.sprite("jan", { anim: "stay" }),
