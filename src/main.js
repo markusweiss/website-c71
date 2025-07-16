@@ -2,7 +2,7 @@ import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
 // import { displayDialogue, setCamScale } from "./utils";
 
-k.loadSprite("jan", "./nerd.png", {
+k.loadSprite("nerd", "./nerd.png", {
   sliceX: 3,
   anims: {
     stay: {
@@ -23,9 +23,26 @@ k.scene("main", async () => {
 k.loadSprite("map", "./office.png");
 
 k.scene("main", async () => {
-  const map = k.add([k.sprite("map"), k.pos(0), k.scale(scaleFactor)]);
+  const map = k.add([k.sprite("map"), k.pos(0, 0), k.scale(scaleFactor)]);
 
   console.log("Map loaded:", map);
+
+  const player = k.make([
+    k.sprite("nerd", { anim: "stay" }),
+    k.area({
+      shape: new k.Rect(k.vec2(0, 3), 10, 10),
+    }),
+    k.body(),
+    //k.anchor("center"),
+    k.pos(k.width() / 2, k.height() / 2),
+    k.scale(0.5),
+    {
+      speed: 250,
+      direction: "run",
+      isInDialogue: false,
+    },
+    "player",
+  ]);
 
   //const mapData = await (await fetch("./office.json")).json();
   //const layers = mapData.layers;
@@ -37,7 +54,7 @@ k.scene("main", async () => {
 
     const layers = mapData.layers;
     //console.log("Layers loaded:", layers);
-    //console.log(mapData);
+    console.log(mapData);
 
     for (const layer of layers) {
       if (layer.name === "walls") {
@@ -52,28 +69,57 @@ k.scene("main", async () => {
           ]);
         }
       }
+      if (layer.name === "things") {
+        for (const things of layer.objects) {
+          console.log("Boundary layer:", things.name);
+          map.add([
+            k.area({
+              shape: new k.Rect(k.vec2(0), things.width, things.height),
+            }),
+            k.body({ isStatic: true }),
+            k.pos(things.x, things.y),
+            things.name,
+          ]);
+
+          if (things.name) {
+            player.onCollide(things.name, () => {
+              console.log("Text ist:", dialogueData[things.name]);
+            });
+          }
+        }
+      }
+
+      /*
+        player.onCollide(layer.name, () => {
+          console.log("Things layer:", layer.name);
+          player.isInDialogue = true;
+
+          displayDialogue(
+            dialogueData[layer.name],
+            () => (player.isInDialogue = false)
+          );
+        });
+        
+      }*/
+
+      if (layer.name === "spawn") {
+        for (const entity of layer.objects) {
+          if (entity.name === "spawn") {
+            player.pos = k.vec2(
+              (map.pos.x + entity.x) * scaleFactor,
+              (map.pos.y + entity.y) * scaleFactor
+            );
+            k.add(player);
+            //continue;
+          }
+        }
+      }
     }
   } catch (error) {
     console.error("error loading JSON:", error);
   }
 
-  const player = k.add([
-    k.sprite("jan", { anim: "stay" }),
-    k.area({
-      shape: new k.Rect(k.vec2(0, 3), 10, 10),
-    }),
-    k.body(),
-    k.anchor("center"),
-    k.pos(500, 500),
-    k.scale(0.5),
-    {
-      speed: 250,
-      direction: "run",
-      isInDialogue: false,
-    },
-    "player",
-  ]);
-
+  /*
   let targetPos = null;
 
   k.onClick((pos) => {
@@ -82,9 +128,7 @@ k.scene("main", async () => {
     console.log("Target position set:", targetPos);
   });
 
-  k.onUpdate(() => {
-    k.camPos(player.worldPos().x, player.worldPos().y - 100);
-  });
+
 
   k.onUpdate("player", (p) => {
     if (targetPos) {
@@ -98,6 +142,59 @@ k.scene("main", async () => {
         p.play("stay");
         targetPos = null;
       }
+    }
+  });
+  */
+
+  k.onUpdate(() => {
+    k.camPos(player.worldPos().x, player.worldPos().y - 100);
+  });
+
+  k.onMouseDown((mouseBtn) => {
+    if (mouseBtn !== "left" || player.isInDialogue) return;
+
+    const worldMousePos = k.toWorld(k.mousePos());
+    player.moveTo(worldMousePos, player.speed);
+
+    const mouseAngle = player.pos.angle(worldMousePos);
+
+    console.log("Mouse angle:", mouseAngle);
+
+    const lowerBound = 80;
+    const upperBound = 100;
+
+    if (
+      mouseAngle > lowerBound &&
+      mouseAngle < upperBound &&
+      player.curAnim() !== "run"
+    ) {
+      player.play("run");
+      player.direction = "up";
+      return;
+    }
+
+    if (
+      mouseAngle < -lowerBound &&
+      mouseAngle > -upperBound &&
+      player.curAnim() !== "run"
+    ) {
+      player.play("run");
+      player.direction = "down";
+      return;
+    }
+
+    if (Math.abs(mouseAngle) > upperBound) {
+      player.flipX = false;
+      if (player.curAnim() !== "run") player.play("run");
+      player.direction = "right";
+      return;
+    }
+
+    if (Math.abs(mouseAngle) < lowerBound) {
+      player.flipX = true;
+      if (player.curAnim() !== "run") player.play("run");
+      player.direction = "left";
+      return;
     }
   });
 

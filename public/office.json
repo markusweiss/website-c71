@@ -12,7 +12,7 @@
         0, 0, 0, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 0, 0, 0,
         61, 61, 61, 61, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 59, 59, 59, 59, 59,
         59, 59, 59, 59, 59, 59, 59, 0, 0, 0, 61, 61, 61, 61, 61, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 59, 59, 95, 96, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59,
+        0, 0, 0, 0, 59, 59, 59, 95, 95, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59,
         59, 59, 61, 61, 61, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 59, 59, 59, 59,
         59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 95, 96, 61, 61, 61, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59,
@@ -49,70 +49,128 @@
       "name": "walls",
       "objects": [
         {
-          "height": 22.6666666666667,
+          "height": 32,
           "id": 2,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 206.666666666667,
-          "x": 48.6666666666667,
-          "y": 10
+          "width": 208,
+          "x": 48,
+          "y": 16
         },
         {
-          "height": 108.666666666667,
+          "height": 144,
           "id": 7,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 10.6666666666667,
-          "x": 37.3333333333333,
-          "y": 34
+          "width": 16,
+          "x": 32,
+          "y": 16
         },
         {
-          "height": 16.6666666666667,
+          "height": 32,
           "id": 11,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 337.333333333333,
-          "x": 47.3333333333333,
-          "y": 143.333333333333
+          "width": 337.333,
+          "x": 47.3333,
+          "y": 128
         },
         {
-          "height": 120.666666666667,
+          "height": 144,
           "id": 12,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
           "width": 16,
-          "x": 384.666666666667,
-          "y": 28
+          "x": 384,
+          "y": 16
         },
         {
-          "height": 20.6666666666667,
+          "height": 32,
           "id": 13,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 79.9999999999999,
-          "x": 304.666666666667,
-          "y": 11.3333333333333
+          "width": 80.667,
+          "x": 304,
+          "y": 16
         },
         {
-          "height": 64.6666666666667,
+          "height": 64,
           "id": 14,
           "name": "wall",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 45.3333333333333,
-          "x": 257.333333333333,
-          "y": 14
+          "width": 48,
+          "x": 256,
+          "y": 16
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 3,
+      "name": "spawn",
+      "objects": [
+        {
+          "height": 0,
+          "id": 17,
+          "name": "spawn",
+          "point": true,
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 0,
+          "x": 208,
+          "y": 96
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 6,
+      "name": "things",
+      "objects": [
+        {
+          "height": 17.5,
+          "id": 22,
+          "name": "pc",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 20.5,
+          "x": 347,
+          "y": 56.5
+        },
+        {
+          "height": 22,
+          "id": 23,
+          "name": "links",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 12.5,
+          "x": 145,
+          "y": 34.5
         }
       ],
       "opacity": 1,
@@ -122,8 +180,8 @@
       "y": 0
     }
   ],
-  "nextlayerid": 3,
-  "nextobjectid": 15,
+  "nextlayerid": 7,
+  "nextobjectid": 24,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.11.2",
