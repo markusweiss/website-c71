@@ -1,9 +1,9 @@
 import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
-// import { displayDialogue, setCamScale } from "./utils";
+import { displayDialogue, setCamScale } from "./dialogue";
 
 k.loadSprite("nerd", "./nerd.png", {
-  sliceX: 3,
+  sliceX: 4,
   anims: {
     stay: {
       from: 0,
@@ -35,7 +35,7 @@ k.scene("main", async () => {
     k.body(),
     //k.anchor("center"),
     k.pos(k.width() / 2, k.height() / 2),
-    k.scale(0.5),
+    k.scale(2),
     {
       speed: 250,
       direction: "run",
@@ -84,6 +84,12 @@ k.scene("main", async () => {
           if (things.name) {
             player.onCollide(things.name, () => {
               console.log("Text ist:", dialogueData[things.name]);
+
+              player.isInDialogue = true;
+              displayDialogue(
+                dialogueData[things.name],
+                () => (player.isInDialogue = false)
+              );
             });
           }
         }
