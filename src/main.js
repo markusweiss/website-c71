@@ -3,15 +3,16 @@ import { k } from "./kaboomCtx";
 import { displayDialogue, setCamScale } from "./dialogue";
 
 k.loadSprite("nerd", "./nerd.png", {
-  sliceX: 4,
+  sliceX: 28,
   anims: {
     stay: {
-      from: 0,
-      to: 0,
+      from: 12,
+      to: 27,
+      loop: true,
     },
     run: {
       from: 0,
-      to: 2,
+      to: 11,
     },
   },
 });
@@ -28,21 +29,36 @@ k.scene("main", async () => {
   console.log("Map loaded:", map);
 
   const player = k.make([
-    k.sprite("nerd", { anim: "stay" }),
+    k.sprite("nerd"),
     k.area({
       shape: new k.Rect(k.vec2(0, 3), 10, 10),
+      speed: 2,
     }),
     k.body(),
     //k.anchor("center"),
     k.pos(k.width() / 2, k.height() / 2),
-    k.scale(2),
+    k.scale(2.5),
     {
-      speed: 250,
+      speed: 300,
       direction: "run",
       isInDialogue: false,
     },
     "player",
   ]);
+
+  player.play("stay", { speed: 1 });
+
+  k.onKeyRelease(() => {
+    const isAnyKeyDown =
+      k.isKeyDown("right") ||
+      k.isKeyDown("left") ||
+      k.isKeyDown("up") ||
+      k.isKeyDown("down");
+
+    if (!isAnyKeyDown && !player.isInDialogue && player.curAnim() !== "stay") {
+      player.play("stay", { speed: 2 });
+    }
+  });
 
   //const mapData = await (await fetch("./office.json")).json();
   //const layers = mapData.layers;
