@@ -35,7 +35,6 @@ k.scene("main", async () => {
       speed: 2,
     }),
     k.body(),
-    //k.anchor("center"),
     k.pos(k.width() / 2, k.height() / 2),
     k.scale(2.5),
     {
@@ -46,7 +45,7 @@ k.scene("main", async () => {
     "player",
   ]);
 
-  player.play("stay", { speed: 1 });
+  player.play("stay", { speed: 2 });
 
   k.onKeyRelease(() => {
     const isAnyKeyDown =
@@ -102,6 +101,7 @@ k.scene("main", async () => {
               console.log("Text ist:", dialogueData[things.name]);
 
               player.isInDialogue = true;
+              player.play("stay", { speed: 2 });
               displayDialogue(
                 dialogueData[things.name],
                 () => (player.isInDialogue = false)
@@ -111,19 +111,6 @@ k.scene("main", async () => {
         }
       }
 
-      /*
-        player.onCollide(layer.name, () => {
-          console.log("Things layer:", layer.name);
-          player.isInDialogue = true;
-
-          displayDialogue(
-            dialogueData[layer.name],
-            () => (player.isInDialogue = false)
-          );
-        });
-        
-      }*/
-
       if (layer.name === "spawn") {
         for (const entity of layer.objects) {
           if (entity.name === "spawn") {
@@ -132,7 +119,6 @@ k.scene("main", async () => {
               (map.pos.y + entity.y) * scaleFactor
             );
             k.add(player);
-            //continue;
           }
         }
       }
@@ -141,34 +127,40 @@ k.scene("main", async () => {
     console.error("error loading JSON:", error);
   }
 
-  /*
-  let targetPos = null;
+  let lastPos = player.pos.clone();
+  //let targetPos = null;
 
-  k.onClick((pos) => {
-    targetPos = k.vec2(pos.x, pos.y);
-
-    console.log("Target position set:", targetPos);
-  });
-
-
-
-  k.onUpdate("player", (p) => {
+  k.onUpdate(() => {
+    /*
     if (targetPos) {
-      const dir = targetPos.sub(p.pos).unit();
-      const dist = p.pos.dist(targetPos);
-
-      if (dist > 4) {
-        p.move(dir.scale(p.speed));
-        p.play("run");
-      } else {
-        p.play("stay");
+      const dist = player.pos.dist(targetPos);
+      console.log("Distance to target:", dist);
+      if (dist < 4) {
+        if (player.curAnim() !== "stay") {
+          player.play("stay", { speed: 1 });
+        }
         targetPos = null;
       }
     }
-  });
-  */
+    */
 
-  k.onUpdate(() => {
+    // Check if the player has stopped moving by comparing the current position
+    // to the previous frame's position. If the movement is less than 1 pixel, player is stationary.
+    const isStationary = player.pos.dist(lastPos) < 1;
+
+    if (
+      /*!targetPos &&*/
+      isStationary &&
+      player.curAnim() !== "stay" &&
+      !player.isInDialogue
+    ) {
+      player.play("stay", { speed: 2 });
+    }
+
+    lastPos = player.pos.clone();
+    // console.log("Player Last position:", lastPos);
+
+    // Update camera position to follow player
     k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
@@ -176,11 +168,13 @@ k.scene("main", async () => {
     if (mouseBtn !== "left" || player.isInDialogue) return;
 
     const worldMousePos = k.toWorld(k.mousePos());
+    // targetPos = worldMousePos;
+
     player.moveTo(worldMousePos, player.speed);
 
     const mouseAngle = player.pos.angle(worldMousePos);
 
-    console.log("Mouse angle:", mouseAngle);
+    //console.log("Mouse angle:/pos", mouseAngle, worldMousePos);
 
     const lowerBound = 80;
     const upperBound = 100;
