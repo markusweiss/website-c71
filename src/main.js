@@ -23,7 +23,23 @@ k.scene("main", async () => {
 
 k.loadSprite("map", "./office.png");
 
+k.loadSprite("bg", "./background.png");
+
 k.scene("main", async () => {
+  const tilesX = Math.ceil(k.width() / 256); // 256 ist die Breite der Kachel
+  const tilesY = Math.ceil(k.height() / 256); // 256 ist die Höhe der Kachel
+
+  // Kacheln des Hintergrunds hinzufügen
+  for (let x = 0; x < tilesX; x++) {
+    for (let y = 0; y < tilesY; y++) {
+      k.add([
+        k.sprite("bg"),
+        k.pos(x * 256, y * 256), // Kacheln in X und Y anordnen
+        k.fixed(), // sorgt dafür, dass sie beim Scrollen nicht verschoben werden
+      ]);
+    }
+  }
+
   const map = k.add([k.sprite("map"), k.pos(0, 0), k.scale(scaleFactor)]);
 
   console.log("Map loaded:", map);
@@ -161,7 +177,7 @@ k.scene("main", async () => {
     // console.log("Player Last position:", lastPos);
 
     // Update camera position to follow player
-    k.camPos(player.worldPos().x, player.worldPos().y - 100);
+    k.camPos(player.worldPos().x, player.worldPos().y);
   });
 
   k.onMouseDown((mouseBtn) => {
