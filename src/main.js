@@ -17,6 +17,8 @@ k.loadSprite("nerd", "./nerd.png", {
   },
 });
 
+let soundBG = new Audio("./lofi.mp3");
+
 k.scene("main", async () => {
   console.log(k.scale(scaleFactor));
 });
@@ -114,7 +116,13 @@ k.scene("main", async () => {
 
           if (things.name) {
             player.onCollide(things.name, () => {
-              console.log("Text ist:", dialogueData[things.name]);
+              console.log("Text ist:", dialogueData[things.name], things.name);
+
+              if (things.name === "pc") {
+                soundBG.loop = true;
+                soundBG.volume = 0.2;
+                soundBG.play();
+              }
 
               player.isInDialogue = true;
               player.play("stay", { speed: 2 });

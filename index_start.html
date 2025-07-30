@@ -10,15 +10,100 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: lightgray;
+      background-image: url("public/wall.png");
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       font-family: "Helvetica Neue", Arial, sans-serif;
     }
+    #dialog {
+      position: fixed;
+      display: none;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      z-index: 1000;
+    }
+    #dialog.visible {
+      display: block;
+      opacity: 0.8;
+    }
+    #socialstuff {
+      position: fixed;
+      background-color: #76af4f;
+      height: auto;
+      width: 100%;
+      bottom: 0;
+      padding: 25px 0;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
   </style>
   <body>
-    <a href="enter.html"><img src="public/bell.png" alt="bell" /></a>
+    <img src="public/code71.png" alt="code71" /><br />
+    <img id="bell" src="public/bell.png" alt="bell" data-playing="false" />
+    <audio id="audioFile" src="public/doorbell.mp3"></audio>
+
+    <div id="dialog">
+      <p>Hallo? Wer ist da? Oh ja, komm gerne</p>
+      <a href="enter.html">rein</a>.
+    </div>
+
+    <div id="socialstuff">
+      <a rel="external" href="https://github.com/markusweiss" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"
+      /></a>
+      <a href="https://markusweiss.itch.io/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/Itch-%23FF0B34.svg?style=for-the-badge&logo=Itch.io&logoColor=white"
+      /></a>
+      <a href="https://gaming.code71.de/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white"
+      /></a>
+
+      <a href="https://www.xing.com/profile/Markus_Weiss6/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/xing-%23006567.svg?style=for-the-badge&logo=xing&logoColor=white"
+      /></a>
+      <a href="https://codepen.io/markusweiss" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/Codepen-000000?style=for-the-badge&logo=codepen&logoColor=white"
+      /></a>
+      <a href="https://www.linkedin.com/in/weissmarkus/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"
+      /></a>
+    </div>
   </body>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const image = document.getElementById("bell");
+      const audio = document.getElementById("audioFile");
+      const dialog = document.getElementById("dialog");
+
+      image.addEventListener("click", function () {
+        if (audio.paused) {
+          audio.play();
+          setTimeout(() => {
+            image.src = "public/bell-ring.png";
+            dialog.classList.add("visible");
+          }, 3000);
+        }
+      });
+    });
+  </script>
 </html>
