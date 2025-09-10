@@ -118,7 +118,7 @@ k.scene("main", async () => {
             player.onCollide(things.name, () => {
               console.log("Text ist:", dialogueData[things.name], things.name);
 
-              if (things.name === "pc") {
+              if (things.name === "radio" && soundBG.paused) {
                 soundBG.loop = true;
                 soundBG.volume = 0.2;
                 soundBG.play();

@@ -182,25 +182,25 @@
                  "y":208
                 }, 
                 {
-                 "height":19,
+                 "height":11,
                  "id":21,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":62,
-                 "x":472,
+                 "width":71,
+                 "x":468,
                  "y":77
                 }, 
                 {
-                 "height":20,
+                 "height":12,
                  "id":23,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":64,
-                 "x":87,
+                 "width":70,
+                 "x":84,
                  "y":77
                 }, 
                 {
@@ -226,14 +226,14 @@
                  "y":-8654
                 }, 
                 {
-                 "height":13,
+                 "height":20,
                  "id":39,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":66,
-                 "x":473,
+                 "width":68,
+                 "x":469,
                  "y":193
                 }, 
                 {
@@ -293,7 +293,7 @@
          "name":"things",
          "objects":[
                 {
-                 "height":21,
+                 "height":11,
                  "id":18,
                  "name":"pc",
                  "rotation":0,
@@ -315,14 +315,14 @@
                  "y":106
                 }, 
                 {
-                 "height":21,
+                 "height":16,
                  "id":20,
                  "name":"note",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":20,
-                 "x":114,
+                 "width":11,
+                 "x":111,
                  "y":81
                 }, 
                 {
@@ -348,18 +348,18 @@
                  "y":68
                 }, 
                 {
-                 "height":20,
+                 "height":26,
                  "id":30,
                  "name":"radio",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":24,
+                 "width":20,
                  "x":479,
-                 "y":190
+                 "y":187
                 }, 
                 {
-                 "height":13,
+                 "height":12,
                  "id":33,
                  "name":"coffee",
                  "rotation":0,
@@ -377,7 +377,7 @@
                  "type":"",
                  "visible":true,
                  "width":20,
-                 "x":630,
+                 "x":633,
                  "y":246
                 }, 
                 {
