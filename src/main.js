@@ -3,7 +3,7 @@ import { k } from "./kaboomCtx";
 import { displayDialogue, setCamScale } from "./dialogue";
 
 k.loadSprite("nerd", "./nerd.png", {
-  sliceX: 28,
+  sliceX: 36,
   anims: {
     stay: {
       from: 12,
