@@ -2,6 +2,7 @@ import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
 import { displayDialogue } from "./dialogue";
 
+// Sprites laden
 k.loadSprite("nerd", "./nerd.png", {
   sliceX: 36,
   anims: {
@@ -12,14 +13,41 @@ k.loadSprite("nerd", "./nerd.png", {
   },
 });
 
-let soundBG = new Audio("./lofi.mp3");
-let walkSound = new Audio("./step.mp3"); // Schrittgeräusch
-walkSound.loop = true;
-walkSound.volume = 0.4;
-
 k.loadSprite("map", "./office.png");
 k.loadSprite("bg", "./background.png");
 
+// --- Sounds laden ---
+await k.loadSound("bg", "./lofi.ogg");
+
+// --- Walksound via Web Audio Buffer ---
+let walkBuffer = null;
+let walkSource = null;
+
+// Preload und decode
+const walkArrayBuffer = await fetch("./step.ogg").then((r) => r.arrayBuffer());
+walkBuffer = await k.audioCtx.decodeAudioData(walkArrayBuffer);
+
+// Funktion zum Starten des Walksounds
+function startWalkSound() {
+  if (!walkSource && walkBuffer) {
+    walkSource = k.audioCtx.createBufferSource();
+    walkSource.buffer = walkBuffer;
+    walkSource.loop = true;
+    walkSource.connect(k.audioCtx.destination);
+    walkSource.start();
+  }
+}
+
+// Funktion zum Stoppen des Walksounds
+function stopWalkSound() {
+  if (walkSource) {
+    walkSource.stop();
+    walkSource.disconnect();
+    walkSource = null;
+  }
+}
+
+// --- Szene ---
 k.scene("main", async () => {
   const tilesX = Math.ceil(k.width() / 256);
   const tilesY = Math.ceil(k.height() / 256);
@@ -38,47 +66,21 @@ k.scene("main", async () => {
     k.body(),
     k.pos(k.width() / 2, k.height() / 2),
     k.scale(2.5),
-    {
-      speed: 300,
-      direction: "run",
-      isInDialogue: false,
-    },
+    { speed: 300, direction: "run", isInDialogue: false },
     "player",
   ]);
 
   player.play("stay", { speed: 2 });
 
-  // Walksound-Status merken
-  let isWalkingSoundPlaying = false;
+  let bgSoundRef = null;
 
-  // KeyRelease: Animation zurücksetzen & Walksound stoppen, falls nötig
   k.onKeyRelease(() => {
-    const isAnyMovementKeyDown =
-      k.isKeyDown("right") ||
-      k.isKeyDown("left") ||
-      k.isKeyDown("up") ||
-      k.isKeyDown("down") ||
-      k.isKeyDown("w") ||
-      k.isKeyDown("a") ||
-      k.isKeyDown("s") ||
-      k.isKeyDown("d");
-
-    if (
-      !isAnyMovementKeyDown &&
-      !player.isInDialogue &&
-      player.curAnim() !== "stay"
-    ) {
+    const movingKeys = ["right", "left", "up", "down", "w", "a", "s", "d"].some(
+      k.isKeyDown
+    );
+    if (!movingKeys && !player.isInDialogue && player.curAnim() !== "stay") {
       player.play("stay", { speed: 2 });
-    }
-
-    // Walksound stoppen, wenn keine Bewegungstaste gedrückt ODER Dialog aktiv
-    if (
-      (!isAnyMovementKeyDown || player.isInDialogue) &&
-      isWalkingSoundPlaying
-    ) {
-      walkSound.pause();
-      walkSound.currentTime = 0;
-      isWalkingSoundPlaying = false;
+      stopWalkSound();
     }
   });
 
@@ -86,7 +88,6 @@ k.scene("main", async () => {
     const response = await fetch("./office.json");
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     const mapData = await response.json();
-
     const layers = mapData.layers;
 
     for (const layer of layers) {
@@ -114,23 +115,15 @@ k.scene("main", async () => {
           if (things.name) {
             player.onCollide(things.name, () => {
               if (things.name === "radio") {
-                if (soundBG.paused) {
-                  soundBG.loop = true;
-                  soundBG.volume = 0.2;
-                  soundBG.play();
+                if (!bgSoundRef) {
+                  bgSoundRef = k.play("bg", { loop: true, volume: 0.2 });
                 } else {
-                  soundBG.pause();
-                  soundBG.currentTime = 0;
+                  bgSoundRef.stop();
+                  bgSoundRef = null;
                 }
               }
 
-              // Walksound beim Dialog sofort stoppen
-              if (isWalkingSoundPlaying) {
-                walkSound.pause();
-                walkSound.currentTime = 0;
-                isWalkingSoundPlaying = false;
-              }
-
+              stopWalkSound();
               player.isInDialogue = true;
               player.play("stay", { speed: 2 });
               displayDialogue(dialogueData[things.name], () => {
@@ -161,18 +154,10 @@ k.scene("main", async () => {
 
   k.onUpdate(() => {
     const isStationary = player.pos.dist(lastPos) < 1;
-
     if (isStationary && player.curAnim() !== "stay" && !player.isInDialogue) {
       player.play("stay", { speed: 2 });
+      stopWalkSound();
     }
-
-    // Walksound stoppen, wenn wir stehen geblieben sind oder ein Dialog aktiv ist
-    if ((isStationary || player.isInDialogue) && isWalkingSoundPlaying) {
-      walkSound.pause();
-      walkSound.currentTime = 0;
-      isWalkingSoundPlaying = false;
-    }
-
     lastPos = player.pos.clone();
     k.camPos(player.worldPos().x, player.worldPos().y);
   });
@@ -181,12 +166,7 @@ k.scene("main", async () => {
     if (mouseBtn !== "left" || player.isInDialogue) return;
 
     const worldMousePos = k.toWorld(k.mousePos());
-    // Walksound starten bei Mausbewegung (nur wenn kein Dialog)
-    if (!player.isInDialogue && !isWalkingSoundPlaying) {
-      walkSound.play();
-      isWalkingSoundPlaying = true;
-    }
-
+    startWalkSound();
     player.moveTo(worldMousePos, player.speed);
 
     const mouseAngle = player.pos.angle(worldMousePos);
@@ -198,20 +178,17 @@ k.scene("main", async () => {
       player.direction = "up";
       return;
     }
-
     if (mouseAngle < -lowerBound && mouseAngle > -upperBound) {
       if (player.curAnim() !== "run") player.play("run");
       player.direction = "down";
       return;
     }
-
     if (Math.abs(mouseAngle) > upperBound) {
       player.flipX = false;
       if (player.curAnim() !== "run") player.play("run");
       player.direction = "right";
       return;
     }
-
     if (Math.abs(mouseAngle) < lowerBound) {
       player.flipX = true;
       if (player.curAnim() !== "run") player.play("run");
@@ -220,15 +197,12 @@ k.scene("main", async () => {
     }
   });
 
-  // Bewegung über Keyboard + Walksound starten (nur für Bewegungs-Tasten)
   k.onKeyDown((key) => {
     if (player.isInDialogue) return;
 
     const movementKeys = ["right", "left", "up", "down", "d", "a", "w", "s"];
-    // Wenn die gedrückte Taste keine Bewegungs-Taste ist: nichts tun (kein Walksound)
     if (!movementKeys.includes(key)) return;
 
-    // aktuelle Bewegungstasten prüfen (wie vorher)
     const keyMap = [
       k.isKeyDown("right"),
       k.isKeyDown("left"),
@@ -240,14 +214,9 @@ k.scene("main", async () => {
       k.isKeyDown("s"),
     ];
 
-    const nbOfKeyPressed = keyMap.filter(Boolean).length;
-    if (nbOfKeyPressed > 1) return;
+    if (keyMap.filter(Boolean).length > 1) return;
 
-    // Walksound starten
-    if (!isWalkingSoundPlaying) {
-      walkSound.play();
-      isWalkingSoundPlaying = true;
-    }
+    startWalkSound();
 
     if (keyMap[0] || keyMap[4]) {
       player.flipX = false;
@@ -256,7 +225,6 @@ k.scene("main", async () => {
       player.move(player.speed, 0);
       return;
     }
-
     if (keyMap[1] || keyMap[5]) {
       player.flipX = true;
       if (player.curAnim() !== "run") player.play("run");
@@ -264,14 +232,12 @@ k.scene("main", async () => {
       player.move(-player.speed, 0);
       return;
     }
-
     if (keyMap[2] || keyMap[6]) {
       if (player.curAnim() !== "up") player.play("up");
       player.direction = "up";
       player.move(0, -player.speed);
       return;
     }
-
     if (keyMap[3] || keyMap[7]) {
       if (player.curAnim() !== "down") player.play("down");
       player.direction = "down";
@@ -283,3 +249,12 @@ k.scene("main", async () => {
 
 k.setBackground(k.Color.fromHex("#37966E"));
 k.go("main");
+
+// Mobile Autoplay Fix
+document.addEventListener(
+  "touchstart",
+  () => {
+    if (k.audioCtx.state === "suspended") k.audioCtx.resume();
+  },
+  { once: true }
+);
