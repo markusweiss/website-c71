@@ -14,6 +14,14 @@ k.loadSprite("nerd", "./nerd.png", {
       from: 0,
       to: 11,
     },
+    down: {
+      from: 28,
+      to: 31,
+    },
+    up: {
+      from: 32,
+      to: 35,
+    },
   },
 });
 
@@ -87,7 +95,7 @@ k.scene("main", async () => {
 
     const layers = mapData.layers;
     //console.log("Layers loaded:", layers);
-    console.log(mapData);
+    //console.log(mapData);
 
     for (const layer of layers) {
       if (layer.name === "walls") {
@@ -245,6 +253,10 @@ k.scene("main", async () => {
       k.isKeyDown("left"),
       k.isKeyDown("up"),
       k.isKeyDown("down"),
+      k.isKeyDown("d"),
+      k.isKeyDown("a"),
+      k.isKeyDown("w"),
+      k.isKeyDown("s"),
     ];
 
     let nbOfKeyPressed = 0;
@@ -257,7 +269,7 @@ k.scene("main", async () => {
     if (nbOfKeyPressed > 1) return;
 
     if (player.isInDialogue) return;
-    if (keyMap[0]) {
+    if (keyMap[0] || keyMap[4]) {
       player.flipX = false;
       if (player.curAnim() !== "run") player.play("run");
       player.direction = "right";
@@ -265,7 +277,7 @@ k.scene("main", async () => {
       return;
     }
 
-    if (keyMap[1]) {
+    if (keyMap[1] || keyMap[5]) {
       player.flipX = true;
       if (player.curAnim() !== "run") player.play("run");
       player.direction = "left";
@@ -273,17 +285,18 @@ k.scene("main", async () => {
       return;
     }
 
-    if (keyMap[2]) {
-      if (player.curAnim() !== "run") player.play("run");
+    if (keyMap[2] || keyMap[6]) {
+      if (player.curAnim() !== "up") player.play("up");
       player.direction = "up";
       player.move(0, -player.speed);
       return;
     }
 
-    if (keyMap[3]) {
-      if (player.curAnim() !== "run") player.play("run");
+    if (keyMap[3] || keyMap[7]) {
+      if (player.curAnim() !== "down") player.play("down");
       player.direction = "down";
       player.move(0, player.speed);
+      return;
     }
   });
 });
