@@ -9,5 +9,5 @@ export const dialogueData = {
   radio: `Hey here you can turn the radio on or off! 🎵 Enjoy some nice background music while exploring my little world!`,
   coffee: `Wanna contact me? Hey drink a coffee ☕️ and write me an <a href="mailto:infopost@code71.de">email</a> 💌`,
   fridge: `Mhhh what should I eat today? Maybe a 🍔 or some 🍕? I think I will go for a salad 🥗!`,
-  games: `Want to see some gameJam 👾 Stuff? Check out my <a href="https://itch.io/profile/markusweiss" target="_blank" rel="noopener">itch.io profile</a>!`,
+  games: `Want to see some gameJam 👾 Stuff? Check out my <a href="https://itch.io/profile/markusweiss" target="_blank" rel="noopener">itch.io</a> profile.`,
 };

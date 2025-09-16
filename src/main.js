@@ -16,38 +16,10 @@ k.loadSprite("nerd", "./nerd.png", {
 k.loadSprite("map", "./office.png");
 k.loadSprite("bg", "./background.png");
 
-// --- Sounds laden ---
+// Sounds laden
+await k.loadSound("walk", "./step.ogg");
 await k.loadSound("bg", "./lofi.ogg");
 
-// --- Walksound via Web Audio Buffer ---
-let walkBuffer = null;
-let walkSource = null;
-
-// Preload und decode
-const walkArrayBuffer = await fetch("./step.ogg").then((r) => r.arrayBuffer());
-walkBuffer = await k.audioCtx.decodeAudioData(walkArrayBuffer);
-
-// Funktion zum Starten des Walksounds
-function startWalkSound() {
-  if (!walkSource && walkBuffer) {
-    walkSource = k.audioCtx.createBufferSource();
-    walkSource.buffer = walkBuffer;
-    walkSource.loop = true;
-    walkSource.connect(k.audioCtx.destination);
-    walkSource.start();
-  }
-}
-
-// Funktion zum Stoppen des Walksounds
-function stopWalkSound() {
-  if (walkSource) {
-    walkSource.stop();
-    walkSource.disconnect();
-    walkSource = null;
-  }
-}
-
-// --- Szene ---
 k.scene("main", async () => {
   const tilesX = Math.ceil(k.width() / 256);
   const tilesY = Math.ceil(k.height() / 256);
@@ -66,21 +38,53 @@ k.scene("main", async () => {
     k.body(),
     k.pos(k.width() / 2, k.height() / 2),
     k.scale(2.5),
-    { speed: 300, direction: "run", isInDialogue: false },
+    {
+      speed: 300,
+      direction: "run",
+      isInDialogue: true,
+    },
     "player",
   ]);
 
   player.play("stay", { speed: 2 });
 
+  displayDialogue(
+    [
+      "Here, you can explore freely, interact with objects, and discover 🔎 little surprises around every corner. ",
+      "Enjoy ❤️ your stay and have fun exploring!",
+    ],
+    () => {
+      player.isInDialogue = false;
+    }
+  );
+
+  // --- Sound-Referenzen ---
+  let walkSoundRef = null;
   let bgSoundRef = null;
 
+  // --- KeyRelease: Animation zurücksetzen + Walksound stoppen ---
   k.onKeyRelease(() => {
-    const movingKeys = ["right", "left", "up", "down", "w", "a", "s", "d"].some(
-      k.isKeyDown
-    );
-    if (!movingKeys && !player.isInDialogue && player.curAnim() !== "stay") {
+    const isAnyMovementKeyDown =
+      k.isKeyDown("right") ||
+      k.isKeyDown("left") ||
+      k.isKeyDown("up") ||
+      k.isKeyDown("down") ||
+      k.isKeyDown("w") ||
+      k.isKeyDown("a") ||
+      k.isKeyDown("s") ||
+      k.isKeyDown("d");
+
+    if (
+      !isAnyMovementKeyDown &&
+      !player.isInDialogue &&
+      player.curAnim() !== "stay"
+    ) {
       player.play("stay", { speed: 2 });
-      stopWalkSound();
+    }
+
+    if ((!isAnyMovementKeyDown || player.isInDialogue) && walkSoundRef) {
+      walkSoundRef.stop();
+      walkSoundRef = null;
     }
   });
 
@@ -123,7 +127,11 @@ k.scene("main", async () => {
                 }
               }
 
-              stopWalkSound();
+              if (walkSoundRef) {
+                walkSoundRef.stop();
+                walkSoundRef = null;
+              }
+
               player.isInDialogue = true;
               player.play("stay", { speed: 2 });
               displayDialogue(dialogueData[things.name], () => {
@@ -154,10 +162,16 @@ k.scene("main", async () => {
 
   k.onUpdate(() => {
     const isStationary = player.pos.dist(lastPos) < 1;
+
     if (isStationary && player.curAnim() !== "stay" && !player.isInDialogue) {
       player.play("stay", { speed: 2 });
-      stopWalkSound();
     }
+
+    if ((isStationary || player.isInDialogue) && walkSoundRef) {
+      walkSoundRef.stop();
+      walkSoundRef = null;
+    }
+
     lastPos = player.pos.clone();
     k.camPos(player.worldPos().x, player.worldPos().y);
   });
@@ -166,7 +180,11 @@ k.scene("main", async () => {
     if (mouseBtn !== "left" || player.isInDialogue) return;
 
     const worldMousePos = k.toWorld(k.mousePos());
-    startWalkSound();
+
+    if (!walkSoundRef) {
+      walkSoundRef = k.play("walk", { loop: true, volume: 0.4 });
+    }
+
     player.moveTo(worldMousePos, player.speed);
 
     const mouseAngle = player.pos.angle(worldMousePos);
@@ -197,6 +215,7 @@ k.scene("main", async () => {
     }
   });
 
+  // --- KeyDown Bewegung + Walksound ---
   k.onKeyDown((key) => {
     if (player.isInDialogue) return;
 
@@ -216,7 +235,9 @@ k.scene("main", async () => {
 
     if (keyMap.filter(Boolean).length > 1) return;
 
-    startWalkSound();
+    if (!walkSoundRef) {
+      walkSoundRef = k.play("walk", { loop: true, volume: 0.4 });
+    }
 
     if (keyMap[0] || keyMap[4]) {
       player.flipX = false;
@@ -249,12 +270,3 @@ k.scene("main", async () => {
 
 k.setBackground(k.Color.fromHex("#37966E"));
 k.go("main");
-
-// Mobile Autoplay Fix
-document.addEventListener(
-  "touchstart",
-  () => {
-    if (k.audioCtx.state === "suspended") k.audioCtx.resume();
-  },
-  { once: true }
-);
