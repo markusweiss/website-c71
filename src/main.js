@@ -1,6 +1,7 @@
 import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
 import { displayDialogue } from "./dialogue";
+import "./styles.css";
 
 // Sprites laden
 k.loadSprite("nerd", "./nerd.png", {
@@ -159,6 +160,8 @@ k.scene("main", async () => {
   }
 
   let lastPos = player.pos.clone();
+  const note = document.getElementById("note");
+  let noteTimer = null;
 
   k.onUpdate(() => {
     const isStationary = player.pos.dist(lastPos) < 1;
@@ -170,6 +173,24 @@ k.scene("main", async () => {
     if ((isStationary || player.isInDialogue) && walkSoundRef) {
       walkSoundRef.stop();
       walkSoundRef = null;
+    }
+
+    if (isStationary && !player.isInDialogue) {
+      // Nur starten, wenn noch kein Timer läuft
+      if (!noteTimer) {
+        noteTimer = setTimeout(() => {
+          note.classList.add("visible");
+          note.classList.remove("hidden");
+        }, 3000);
+      }
+    } else {
+      // Spieler bewegt sich → Timer abbrechen & Hinweis verstecken
+      if (noteTimer) {
+        clearTimeout(noteTimer);
+        noteTimer = null;
+      }
+      note.classList.remove("visible");
+      note.classList.add("hidden");
     }
 
     lastPos = player.pos.clone();

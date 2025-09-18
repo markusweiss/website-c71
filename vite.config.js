@@ -9,16 +9,31 @@ export default defineConfig({
   },
   plugins: [
     {
-      name: "rename-index",
+      name: "rename-html-files",
       closeBundle() {
         const distDir = resolve(__dirname, "dist");
-        const oldPath = resolve(distDir, "index.html");
-        const newPath = resolve(distDir, "enter.html");
+
+        // 1️⃣ index.html → enter.html
         try {
-          renameSync(oldPath, newPath);
+          const oldIndex = resolve(distDir, "index.html");
+          const newEnter = resolve(distDir, "enter.html");
+          renameSync(oldIndex, newEnter);
           console.log("✅ index.html umbenannt zu enter.html");
         } catch (err) {
           console.warn("⚠️ Konnte index.html nicht umbenennen:", err.message);
+        }
+
+        // 2️⃣ index_start.html → index.html
+        try {
+          const oldStart = resolve(distDir, "index_start.html");
+          const newIndex = resolve(distDir, "index.html");
+          renameSync(oldStart, newIndex);
+          console.log("✅ index_start.html umbenannt zu index.html");
+        } catch (err) {
+          console.warn(
+            "⚠️ Konnte index_start.html nicht umbenennen:",
+            err.message
+          );
         }
       },
     },

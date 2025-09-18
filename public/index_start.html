@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="start.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Code71.de - Private Seite von Markus Weiß, Developer, Project Manager,
+      React und Godot Fan
+    </title>
+    <meta
+      name="description"
+      content="Ich mache agiles responsive Frontend, JavaScript und CMS Development für Web- und Mobile Apps."
+    />
+    <meta
+      name="keywords"
+      content="Godot, Projekt Management, HTML5, HTML, CSS, CSS3, SASS, SCRUM, JavaScript, jQuery, jQuery Mobile, Frontend Development, Beratung, SEO Optimierung, Retina Optimizing, Performance Optimizing, Responsive Development, Kirby, Kanban, Compass, Photoshop, Agile Software Development, Cross Browser Testing und Debugging, CMS Development, CMS Templating"
+    />
+  </head>
+  <body>
+    <img src="code71.png" alt="code71" /><br />
+    <img id="bell" src="bell.png" alt="bell" data-playing="false" />
+    <audio id="audioFile" src="doorbell.mp3"></audio>
+
+    <div id="dialog">
+      <p>Hi there 👋, another visitor stay a while – <br />stay forever!</p>
+      <a href="enter.html">Enter door!</a>
+    </div>
+
+    <div id="socialstuff">
+      <a rel="external" href="https://github.com/markusweiss" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"
+      /></a>
+      <a href="https://markusweiss.itch.io/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/Itch-%23FF0B34.svg?style=for-the-badge&logo=Itch.io&logoColor=white"
+      /></a>
+      <a href="https://gaming.code71.de/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white"
+      /></a>
+
+      <a href="https://www.xing.com/profile/Markus_Weiss6/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/xing-%23006567.svg?style=for-the-badge&logo=xing&logoColor=white"
+      /></a>
+      <a href="https://codepen.io/markusweiss" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/Codepen-000000?style=for-the-badge&logo=codepen&logoColor=white"
+      /></a>
+      <a href="https://www.linkedin.com/in/weissmarkus/" target="_blank"
+        ><img
+          src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"
+      /></a>
+      <div class="legal">
+        <a href="https://code71.de/impressum.html" target="_blank">Impressum</a>
+        &nbsp; | &nbsp;
+        <a href="https://code71.de/datenschutz.html" target="_blank"
+          >Datenschutz</a
+        >
+      </div>
+    </div>
+  </body>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const image = document.getElementById("bell");
+      const audio = document.getElementById("audioFile");
+      const dialog = document.getElementById("dialog");
+
+      image.addEventListener("click", function () {
+        if (audio.paused) {
+          audio.play();
+          setTimeout(() => {
+            image.src = "bell-ring.png";
+            dialog.classList.add("visible");
+          }, 3000);
+        }
+      });
+    });
+  </script>
+</html>
