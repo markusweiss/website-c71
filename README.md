@@ -4,7 +4,7 @@
 
 `nvm use`
 
-we need minimum 20.17.0
+we need minimum 20.19.0
 
 ## start
 
