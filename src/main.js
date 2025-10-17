@@ -18,8 +18,8 @@ k.loadSprite("map", "./office.png");
 k.loadSprite("bg", "./background.png");
 
 // Sounds laden
-await k.loadSound("walk", "./step.ogg");
-await k.loadSound("bg", "./lofi.ogg");
+await k.loadSound("walk", "./step.mp3");
+await k.loadSound("bg", "./lofi.mp3");
 
 k.scene("main", async () => {
   const tilesX = Math.ceil(k.width() / 256);
