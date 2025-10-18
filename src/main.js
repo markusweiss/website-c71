@@ -20,6 +20,7 @@ k.loadSprite("bg", "./background.png");
 // Sounds laden
 await k.loadSound("walk", "./step.mp3");
 await k.loadSound("bg", "./lofi.mp3");
+await k.loadSound("lift", "./lift.mp3");
 
 k.scene("main", async () => {
   const tilesX = Math.ceil(k.width() / 256);
@@ -62,6 +63,7 @@ k.scene("main", async () => {
   // --- Sound-Referenzen ---
   let walkSoundRef = null;
   let bgSoundRef = null;
+  let liftSoundRef = null;
 
   // --- KeyRelease: Animation zurücksetzen + Walksound stoppen ---
   k.onKeyRelease(() => {
@@ -125,6 +127,13 @@ k.scene("main", async () => {
                 } else {
                   bgSoundRef.stop();
                   bgSoundRef = null;
+                }
+              }
+
+              if (things.name === "exit") {
+                if (!liftSoundRef) {
+                  liftSoundRef = k.play("lift", { loop: false, volume: 0.3 });
+                  liftSoundRef = null;
                 }
               }
 
