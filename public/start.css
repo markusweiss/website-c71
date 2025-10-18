@@ -8,6 +8,10 @@ a:focus {
   text-decoration: none;
 }
 
+::selection {
+  background: #bef200;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -19,6 +23,21 @@ body {
   height: 70vh;
   font-family: "Helvetica Neue", Arial, sans-serif;
 }
+
+body.subsite {
+  height: auto;
+  margin: 5% auto;
+  max-width: 720px;
+  background-color: #ffffff;
+  background-image: none;
+  text-align: center;
+}
+
+.source {
+  font-size: 0.85rem;
+  color: #666;
+}
+
 #dialog {
   position: fixed;
   display: none;
